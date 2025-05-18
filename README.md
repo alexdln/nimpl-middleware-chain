@@ -22,7 +22,7 @@ export default chain([
 ]);
 ```
 
-Visit https://nimpl.tech/middleware-chain to view the full documentation.
+Visit https://nimpl.dev/docs/middleware-chain to view the full documentation.
 
 ## Installation
 
