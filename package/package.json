@@ -1,6 +1,6 @@
 {
   "name": "@nimpl/middleware-chain",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "The package allows you to create a chain of native next.js middlewares without any modifications",
   "main": "./dist/chain.js",
   "files": [
