@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@nimpl/middleware-chain": "0.1.2",
+    "@nimpl/middleware-chain": "0.5.2",
     "next": "14.2.3",
     "next-auth": "5.0.0-beta.19",
     "next-intl": "3.14.1",
