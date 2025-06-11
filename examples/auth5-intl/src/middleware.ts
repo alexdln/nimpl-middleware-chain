@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import createMiddleware from "next-intl/middleware";
-import { chain, FinalNextResponse } from "@nimpl/middleware-chain";
-import { Middleware } from "@nimpl/middleware-chain/dist/lib/types";
+import { chain, FinalNextResponse, type Middleware } from "@nimpl/middleware-chain";
 
 const intlMiddleware = createMiddleware({
     locales: ["en", "dk"],
