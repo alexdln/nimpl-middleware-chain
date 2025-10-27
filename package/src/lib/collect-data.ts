@@ -1,13 +1,17 @@
 import { NextResponse, type NextFetchEvent } from "next/server";
-import { type Logger } from "./logger";
-import { type ChainItem, type Middleware, type ChainNextResponse, type Summary, type BaseRequest } from "./types";
-import { FinalSymbol } from "./final-next-response";
-import { INTERNAL_HEADERS } from "./constants";
 
-export const collectData = async <RequestType extends BaseRequest, ResponseType extends Response>(
+import { type ChainItem, type Middleware, type ChainNextResponse, type Summary, type BaseRequest } from "./types";
+import { type Logger } from "./logger";
+import { INTERNAL_HEADERS, FINAL_SYMBOL, REWRITE_HEADER, REDIRECT_HEADER } from "./constants";
+
+export const collectData = async <
+    RequestType extends BaseRequest,
+    ResponseType extends Response,
+    NextFetchEventType = NextFetchEvent,
+>(
     req: RequestType,
-    event: NextFetchEvent,
-    chainItems: ChainItem<RequestType, ResponseType>[],
+    event: NextFetchEventType,
+    chainItems: ChainItem<RequestType, ResponseType, NextFetchEventType>[],
     logger: Logger,
 ) => {
     const summary: Summary = {
@@ -15,12 +19,13 @@ export const collectData = async <RequestType extends BaseRequest, ResponseType 
         destination: req.nextUrl,
         cookies: new Map(),
         headers: new Headers(),
+        requestHeaders: new Headers(),
         status: 200,
         body: undefined,
     };
 
     for await (const chainItem of chainItems) {
-        let middleware: Middleware<RequestType, ResponseType>;
+        let middleware: Middleware<RequestType, ResponseType, NextFetchEventType>;
         if (Array.isArray(chainItem)) {
             const [itemMiddleware, itemRules] = chainItem;
             if (
@@ -47,8 +52,8 @@ export const collectData = async <RequestType extends BaseRequest, ResponseType 
             throw new Error("Invalid middleware response");
         }
 
-        if (next.headers.has("Location")) {
-            const destination = next.headers.get("Location") as string;
+        if (next.headers.has(REDIRECT_HEADER)) {
+            const destination = next.headers.get(REDIRECT_HEADER) as string;
             if (summary.destination !== destination || summary.type === "rewrite") {
                 logger.log(
                     `Changing destination between middlewares: ${summary.destination} (${summary.type}) -> ${destination} (redirect)`,
@@ -63,8 +68,8 @@ export const collectData = async <RequestType extends BaseRequest, ResponseType 
                 statusText: summary.statusText,
                 body: undefined,
             });
-        } else if (next.headers.has("x-middleware-rewrite")) {
-            const destination = next.headers.get("x-middleware-rewrite") as string;
+        } else if (next.headers.has(REWRITE_HEADER)) {
+            const destination = next.headers.get(REWRITE_HEADER) as string;
             if (summary.destination !== destination || summary.type === "redirect") {
                 logger.log(
                     `Changing destination between middlewares: ${summary.destination} (${summary.type}) -> ${destination} (rewrite)`,
@@ -98,11 +103,17 @@ export const collectData = async <RequestType extends BaseRequest, ResponseType 
             summary.cookies.set(cookie.name, cookie);
         });
         next.headers.forEach((value, key) => {
-            if (!INTERNAL_HEADERS.includes(key.toLowerCase())) {
-                summary.headers.set(key, value);
+            if (INTERNAL_HEADERS.includes(key.toLowerCase())) return;
+
+            if (key.toLowerCase().startsWith("x-middleware-request-")) {
+                summary.requestHeaders.set(key.replace("x-middleware-request-", ""), value);
+                return;
             }
+
+            summary.headers.set(key, value);
         });
-        if (next[FinalSymbol]) break;
+
+        if (next[FINAL_SYMBOL]) break;
     }
 
     return summary;
