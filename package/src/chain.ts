@@ -8,13 +8,22 @@ export { type ChainItem, type ChainConfig, type BaseRequest, type Middleware } f
 export { FinalNextResponse } from "./lib/final-next-response";
 
 export const chain =
-    <RequestType extends Request & BaseRequest = NextRequest, ResponseType extends Response = NextResponse>(
-        middlewares: ChainItem<RequestType, ResponseType>[],
+    <
+        RequestType extends Request & BaseRequest = NextRequest,
+        ResponseType extends Response = NextResponse,
+        NextFetchEventType = NextFetchEvent,
+    >(
+        middlewares: ChainItem<RequestType, ResponseType, NextFetchEventType>[],
         config?: ChainConfig,
     ) =>
-    async (req: RequestType, event: NextFetchEvent) => {
+    async (req: RequestType, event: NextFetchEventType) => {
         const logger = new Logger(config?.logger);
-        const summary = await collectData<RequestType, ResponseType>(req, event, middlewares, logger);
+        const summary = await collectData<RequestType, ResponseType, NextFetchEventType>(
+            req,
+            event,
+            middlewares,
+            logger,
+        );
         const next = formatResponse(summary);
 
         return next;

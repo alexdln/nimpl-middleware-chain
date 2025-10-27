@@ -1,7 +1,7 @@
 {
-  "name": "@nimpl/middleware-chain",
-  "version": "0.5.2",
-  "description": "The package allows you to create a chain of native next.js middlewares without any modifications",
+  "name": "@nimpl/proxy-chain",
+  "version": "1.0.0",
+  "description": "Create a chain of native Next.js proxies seamlessly, without changing any existing proxy code",
   "main": "./dist/chain.js",
   "files": [
     "dist"
@@ -13,25 +13,27 @@
     "next",
     "next.js",
     "middleware",
+    "proxy",
+    "proxies",
     "edge",
     "chain",
-    "middleware chain",
+    "proxy chain",
     "queue",
     "line"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/vordgi/nimpl-middleware-chain.git"
+    "url": "git://github.com/alexdln/nimpl-proxy-chain.git"
   },
   "author": {
-    "name": "Savelyev Alexander",
-    "email": "vordgi1@gmail.com",
-    "url": "https://github.com/vordgi/"
+    "name": "Alex Savelyev",
+    "email": "dev@alexdln.com",
+    "url": "https://github.com/alexdln/"
   },
   "license": "MIT",
   "devDependencies": {
-    "next": "15.1.7",
-    "typescript": "5.7.3"
+    "next": "16.0.0",
+    "typescript": "5.9.3"
   },
   "peerDependencies": {
     "next": ">= 14.0.0",
