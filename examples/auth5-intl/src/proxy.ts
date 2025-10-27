@@ -1,6 +1,7 @@
-import { auth } from "@/auth";
+import { chain, FinalNextResponse, type Middleware } from "@nimpl/proxy-chain";
 import createMiddleware from "next-intl/middleware";
-import { chain, FinalNextResponse, type Middleware } from "@nimpl/middleware-chain";
+
+import { auth } from "@/auth";
 
 const intlMiddleware = createMiddleware({
     locales: ["en", "dk"],
@@ -28,5 +29,5 @@ export default chain([
 ]);
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.well-known).*)"],
 };
